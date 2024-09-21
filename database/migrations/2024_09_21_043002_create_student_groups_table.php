@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('student_groups', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained();
-            $table->foreignId('teacher_id')->constrained();
+            $table->foreignId('teacher_id')->constrained('users');
             $table->foreignId('subject_id')->constrained();
             $table->string('days')->nullable();
             $table->string('price');
