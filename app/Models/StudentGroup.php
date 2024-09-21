@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\Days;
 use App\Enum\TeacherPriceType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,8 +23,15 @@ class StudentGroup extends Model
     ];
 
     protected $casts = [
-        'teacher_price_type' => TeacherPriceType::class
+        'teacher_price_type' => TeacherPriceType::class,
+        'days' => 'array',
     ];
+
+    public function getDaysAttribute($value)
+    {
+        $array = is_array($value) ? $value : json_decode($value, true);
+        return array_map(fn($day) => Days::from($day), $array);
+    }
 
     public function student(): BelongsTo
     {

@@ -2,21 +2,20 @@
 
 namespace App\Filament\Resources\StudentResource\RelationManagers;
 
-use Filament\Actions\Action;
-use Filament\Actions\Concerns\CanOpenModal;
+use App\Enum\Days;
+use App\Enum\TeacherPriceType;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class GroupsRelationManager extends RelationManager
 {
     protected static string $relationship = 'groups';
-
-    use CanOpenModal;
 
     public function form(Form $form): Form
     {
@@ -24,9 +23,43 @@ class GroupsRelationManager extends RelationManager
             ->schema([
                 Forms\Components\Select::make('subject_id')
                     ->required()
+                    ->relationship('subject', 'name')
+                    ->native(false)
+                    ->searchable()
+                    ->live()
+                    ->preload(),
+                Forms\Components\Select::make('teacher_id')
+                    ->required()
+                    ->options(function (Get $get) {
+                        $subject = $get('subject_id');
+                        if ($subject)
+                            return User::where('subject_id', $subject)->pluck('name', 'id');
+                    })
                     ->native(false)
                     ->searchable()
                     ->preload(),
+                Forms\Components\Select::make('days')
+                    ->required()
+                    ->options(Days::class)
+                    ->multiple()
+                    ->native(false)
+                    ->searchable()
+                    ->preload(),
+                Forms\Components\TextInput::make('price')
+                    ->mask(RawJs::make('$money($input)'))
+                    ->stripCharacters(','),
+                Forms\Components\Select::make('teacher_price_type')
+                    ->required()
+                    ->options(TeacherPriceType::class)
+                    ->live()
+                    ->native(false)
+                    ->searchable()
+                    ->preload(),
+                Forms\Components\TextInput::make('teacher_price')
+                    ->required()
+                    ->mask(RawJs::make('$money($input)'))
+                    ->stripCharacters(',')
+                    ->suffix(fn(Get $get) => $get('teacher_price_type') == TeacherPriceType::BY_PERCENTAGE->value ? '%' : 'so`m'),
             ]);
     }
 
@@ -35,7 +68,14 @@ class GroupsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('title')
             ->columns([
-                Tables\Columns\TextColumn::make('title'),
+                Tables\Columns\TextColumn::make('subject.name'),
+                Tables\Columns\TextColumn::make('teacher.name'),
+                Tables\Columns\TextColumn::make('days'),
+                Tables\Columns\TextColumn::make('price')
+                    ->formatStateUsing(fn($state) => format_money($state)),
+                Tables\Columns\TextColumn::make('teacher_price_type'),
+                Tables\Columns\TextColumn::make('teacher_price')
+                    ->formatStateUsing(fn($state) => format_money($state)),
             ])
             ->filters([
                 //
@@ -52,10 +92,5 @@ class GroupsRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    protected function getTableModalActionLabel(): ?string
-    {
-        return 'Manage Groups';
     }
 }

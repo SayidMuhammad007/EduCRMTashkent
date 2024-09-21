@@ -12,8 +12,8 @@ enum TeacherPriceType: string implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::BY_PRICE => 'Foiz',
-            self::BY_PERCENTAGE => 'Summa',
+            self::BY_PRICE => 'Summa',
+            self::BY_PERCENTAGE => 'Foiz',
         };
     }
 }
