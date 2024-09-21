@@ -2,13 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use App\Enum\PaymentMethod;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use App\Filament\Resources\StudentResource\RelationManagers\GroupsRelationManager;
 use App\Models\Student;
+use App\Models\StudentGroup;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -71,12 +77,37 @@ class StudentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('advance')
-                ->label('Manage Groups')
-                ->modalContent(fn($record) => view('livewire.manage-groups', [
-                    'student' => $record,
-                ])),
-            
+                Tables\Actions\Action::make('pay')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->color('success')
+                    ->form([
+                        TextInput::make('price')
+                            ->label('To`lov summasi')
+                            ->required()
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->numeric()
+                            ->prefix('$'),
+                        Select::make('payment_type')
+                            ->label('To`lov usuli')
+                            ->options(PaymentMethod::class)
+                            ->required(),
+                        Select::make('group_id')
+                            ->label('Guruh')
+                            ->native(false)
+                            ->searchable()
+                            ->preload()
+                            ->options(function ($record) {
+                                return $record->groups->pluck('subject.name', 'id');
+                            })->required(),
+                        RichEditor::make('comment')
+                            ->label('Izoh')
+                            ->helperText('Bu yerga to`lov haqida qo`shimcha malumot yozishingiz mumkin!'),
+                    ])
+                    ->action(function (array $data, $record) {
+                        // dd($data);
+                        $record->payments()->create($data);
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -88,7 +119,8 @@ class StudentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\GroupsRelationManager::class
+            RelationManagers\GroupsRelationManager::class,
+            RelationManagers\PaymentsRelationManager::class,
         ];
     }
 
