@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enum\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -54,5 +55,10 @@ class User extends Authenticatable
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);
+    }
+
+    public function groups(): HasMany
+    {
+        return $this->hasMany(StudentGroup::class, 'teacher_id');
     }
 }

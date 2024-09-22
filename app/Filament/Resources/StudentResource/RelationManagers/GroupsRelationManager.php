@@ -4,6 +4,7 @@ namespace App\Filament\Resources\StudentResource\RelationManagers;
 
 use App\Enum\Days;
 use App\Enum\TeacherPriceType;
+use App\Filament\Resources\UserResource\Pages\UserGroups;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -19,49 +20,12 @@ class GroupsRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('subject_id')
-                    ->required()
-                    ->relationship('subject', 'name')
-                    ->native(false)
-                    ->searchable()
-                    ->live()
-                    ->preload(),
-                Forms\Components\Select::make('teacher_id')
-                    ->required()
-                    ->options(function (Get $get) {
-                        $subject = $get('subject_id');
-                        if ($subject)
-                            return User::where('subject_id', $subject)->pluck('name', 'id');
-                    })
-                    ->native(false)
-                    ->searchable()
-                    ->preload(),
-                Forms\Components\Select::make('days')
-                    ->required()
-                    ->options(Days::class)
-                    ->multiple()
-                    ->native(false)
-                    ->searchable()
-                    ->preload(),
-                Forms\Components\TextInput::make('price')
-                    ->mask(RawJs::make('$money($input)'))
-                    ->stripCharacters(','),
-                Forms\Components\Select::make('teacher_price_type')
-                    ->required()
-                    ->options(TeacherPriceType::class)
-                    ->live()
-                    ->native(false)
-                    ->searchable()
-                    ->preload(),
-                Forms\Components\TextInput::make('teacher_price')
-                    ->required()
-                    ->mask(RawJs::make('$money($input)'))
-                    ->stripCharacters(',')
-                    ->suffix(fn(Get $get) => $get('teacher_price_type') == TeacherPriceType::BY_PERCENTAGE->value ? '%' : 'so`m'),
-            ]);
+        $userGroupsManager = new UserGroups();
+        $formSchema = $userGroupsManager->getFormSchema();
+        $form->schema($formSchema);
+        return $form;
     }
+
 
     public function table(Table $table): Table
     {

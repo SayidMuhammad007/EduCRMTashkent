@@ -11,8 +11,10 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
@@ -74,11 +76,14 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('role_id')
+                    ->native(false)
+                    ->options(UserRole::class)
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
+            ->recordUrl(fn(Model $record) => $record->role_id == UserRole::TEACHER ? UserResource::getUrl('students', ['record' => $record]) : '')
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -99,6 +104,7 @@ class UserResource extends Resource
             'index' => Pages\ListUsers::route('/'),
             // 'create' => Pages\CreateUser::route('/create'),
             // 'edit' => Pages\EditUser::route('/{record}/edit'),
+            'students' => Pages\UserGroups::route('/{record}/students'),
         ];
     }
 }

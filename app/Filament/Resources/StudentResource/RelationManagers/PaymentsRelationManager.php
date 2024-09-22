@@ -51,7 +51,6 @@ class PaymentsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('group.teacher.name'),
                 Tables\Columns\TextColumn::make('group.subject.name'),
@@ -60,8 +59,11 @@ class PaymentsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('comment')
                     ->extraAttributes([
                         'style' => 'max-width:260px'
-                    ])->html()->wrap(),
+                    ])
+                    ->html()
+                    ->wrap(),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 //
             ])
