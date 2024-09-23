@@ -52,11 +52,16 @@ class PaymentsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('group.teacher.name'),
-                Tables\Columns\TextColumn::make('group.subject.name'),
-                Tables\Columns\TextColumn::make('price'),
-                Tables\Columns\TextColumn::make('payment_type'),
+                Tables\Columns\TextColumn::make('group.teacher.name')
+                    ->label('O`qituvchi'),
+                Tables\Columns\TextColumn::make('group.subject.name')
+                    ->label('Yo`nalish'),
+                Tables\Columns\TextColumn::make('price')
+                    ->label('Summa'),
+                Tables\Columns\TextColumn::make('payment_type')
+                    ->label('To`lov turi'),
                 Tables\Columns\TextColumn::make('comment')
+                    ->label('Izoh')
                     ->extraAttributes([
                         'style' => 'max-width:260px'
                     ])

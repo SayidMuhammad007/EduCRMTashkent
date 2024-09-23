@@ -32,13 +32,18 @@ class GroupsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('title')
             ->columns([
-                Tables\Columns\TextColumn::make('subject.name'),
-                Tables\Columns\TextColumn::make('teacher.name'),
-                Tables\Columns\TextColumn::make('days'),
+                Tables\Columns\TextColumn::make('subject.name')
+                    ->label('Yo`nalish'),
+                Tables\Columns\TextColumn::make('teacher.name')
+                    ->label('O`qituvchi'),
+                Tables\Columns\TextColumn::make('days')
+                    ->label('Dars kunlari'),
                 Tables\Columns\TextColumn::make('price')
+                    ->label('Summa')
                     ->formatStateUsing(fn($state) => format_money($state)),
                 Tables\Columns\TextColumn::make('teacher_price_type'),
                 Tables\Columns\TextColumn::make('teacher_price')
+                    ->label('O`qituvchi haqqi')
                     ->formatStateUsing(fn($state) => format_money($state)),
             ])
             ->filters([
