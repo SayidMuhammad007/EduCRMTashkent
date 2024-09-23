@@ -14,6 +14,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Support\RawJs;
+use Illuminate\Database\Eloquent\Model;
 
 class UserGroups extends Page implements Tables\Contracts\HasTable
 {
@@ -60,6 +61,7 @@ class UserGroups extends Page implements Tables\Contracts\HasTable
                         return $form->schema(self::getFormSchema()); // Use $this instead of self
                     }),
             ])
+            ->recordUrl(fn(Model $record) => UserResource::getUrl('history', ['record' => $record]))
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

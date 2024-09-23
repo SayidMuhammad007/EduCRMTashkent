@@ -5,9 +5,7 @@ namespace App\Filament\Resources;
 use App\Enum\PaymentMethod;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
-use App\Filament\Resources\StudentResource\RelationManagers\GroupsRelationManager;
 use App\Models\Student;
-use App\Models\StudentGroup;
 use Filament\Forms;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -17,8 +15,6 @@ use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StudentResource extends Resource
 {
@@ -26,16 +22,29 @@ class StudentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return 'Talaba';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Talabalar';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('full_name')
                     ->required()
+                    ->label('Talaba')
                     ->maxLength(255),
-                Forms\Components\DatePicker::make('birth_date'),
+                Forms\Components\DatePicker::make('birth_date')
+                    ->label('Tug`ilgan sana'),
                 Forms\Components\TextInput::make('phone')
                     ->tel()
+                    ->label('Telefon raqami')
                     ->columnSpanFull()
                     ->maxLength(17)
                     ->regex('/^\+998 \d{2} \d{3} \d{2} \d{2}$/')
@@ -43,6 +52,7 @@ class StudentResource extends Resource
                     ->mask('+998 99 999 99 99')
                     ->minLength(17),
                 Forms\Components\RichEditor::make('comment')
+                    ->label('Izoh')
                     ->columnSpanFull(),
             ]);
     }
@@ -52,14 +62,18 @@ class StudentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('full_name')
+                    ->label('Talaba')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('birth_date')
+                    ->label('Tug`ilgan sana')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
+                    ->label('Telefon raqami')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('comment')
                     ->html()
+                    ->label('Izoh')
                     ->wrap()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -78,6 +92,7 @@ class StudentResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('pay')
+                    ->label('To`lov qilish')
                     ->icon('heroicon-o-currency-dollar')
                     ->color('success')
                     ->form([

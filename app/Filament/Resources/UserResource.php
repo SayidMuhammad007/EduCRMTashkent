@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Enum\UserRole;
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -13,15 +12,23 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getModelLabel(): string
+    {
+        return 'Xodim';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Xodimlar';
+    }
 
     public static function form(Form $form): Form
     {
@@ -59,12 +66,15 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Ism')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('role_id')
+                    ->label('Rol')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('subject.name')
+                    ->label('Yo`nalish')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -105,6 +115,7 @@ class UserResource extends Resource
             // 'create' => Pages\CreateUser::route('/create'),
             // 'edit' => Pages\EditUser::route('/{record}/edit'),
             'students' => Pages\UserGroups::route('/{record}/students'),
+            'history' => Pages\StudentData::route('/student/{record}/history'),
         ];
     }
 }
