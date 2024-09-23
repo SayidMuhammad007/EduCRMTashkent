@@ -47,6 +47,7 @@ class StudentResource extends Resource
                     ->tel()
                     ->label('Telefon raqami')
                     ->columnSpanFull()
+                    ->default('+998')
                     ->maxLength(17)
                     ->regex('/^\+998 \d{2} \d{3} \d{2} \d{2}$/')
                     ->placeholder('+998 99 999 99 99')
