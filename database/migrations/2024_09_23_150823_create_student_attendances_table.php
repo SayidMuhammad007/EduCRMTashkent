@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('student_attendances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained();
-            $table->foreignId('teacher_id')->constrained('users');
-            $table->foreignId('group_id')->constrained('student_groups');
+            $table->foreignId('student_id')->constrained()->onDelete('cascade');
+            $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('group_id')->constrained('student_groups')->onDelete('cascade');
             $table->string('status');
             $table->string('price');
             $table->date('date')->nullable();
             $table->timestamps();
-        });
+        });        
     }
 
     /**

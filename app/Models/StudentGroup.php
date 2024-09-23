@@ -15,7 +15,7 @@ class StudentGroup extends Model
     protected $fillable = [
         'student_id',
         'teacher_id',
-        'group_id',
+        'subject_id',
         'days',
         'price',
         'teacher_price_type',

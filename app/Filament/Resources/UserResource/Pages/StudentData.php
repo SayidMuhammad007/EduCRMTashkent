@@ -40,9 +40,11 @@ class StudentData extends Page implements Tables\Contracts\HasTable
                     ->sortable(),
                 TextColumn::make('student.full_name')
                     ->label('Talaba')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('group.subject.name')
                     ->label('Yo`nalish')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('date')
                     ->date()
@@ -50,6 +52,7 @@ class StudentData extends Page implements Tables\Contracts\HasTable
                     ->sortable(),
                 TextColumn::make('price')
                     ->label('Narxi')
+                    ->searchable()
                     ->formatStateUsing(fn($state) => format_money($state))
                     ->sortable(),
             ])
@@ -64,6 +67,9 @@ class StudentData extends Page implements Tables\Contracts\HasTable
                 CreateAction::make('create_payment_debt')
                     ->label('Yangi qo`shish')
                     ->modalHeading('Davomat')
+                    ->visible(function () {
+                        return !$this->record->attendance()->where('date', now()->format('Y-m-d'))->first();
+                    })
                     ->model(StudentAttendance::class)
                     ->form([
                         Forms\Components\Select::make('status')
@@ -90,9 +96,15 @@ class StudentData extends Page implements Tables\Contracts\HasTable
                         $data['student_id'] = $this->record->id;
                         $data['group_id'] = $group->id;
                         $data['teacher_id'] = $group->teacher_id;
-                        $data['price'] = $group->price;
+                        $data['price'] = $data['status'] == AttendanceStatus::TRUE->value ? $group->price : 0;
                         $data['date'] = now();
                         return $data;
+                    })
+                    ->after(function ($record) {
+                        $record->status == AttendanceStatus::TRUE ? $record->payments()->create([
+                            'student_id' => $record->student_id,
+                            'price' => -$record->price,
+                        ]) : '';
                     })
             ])
             ->bulkActions([

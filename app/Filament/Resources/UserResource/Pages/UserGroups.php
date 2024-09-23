@@ -14,6 +14,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Support\RawJs;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Model;
 
 class UserGroups extends Page implements Tables\Contracts\HasTable
@@ -38,22 +39,26 @@ class UserGroups extends Page implements Tables\Contracts\HasTable
             ->columns([
                 TextColumn::make('student.full_name')
                     ->label('Talaba')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('subject.name')
                     ->label('Yo`nalish')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('days')
                     ->label('Dars kunlari')
                     ->badge()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('price')
                     ->label('Kurs narxi')
+                    ->searchable()
                     ->formatStateUsing(fn($state) => format_money($state))
                     ->sortable(),
             ])
             ->defaultSort('id', 'desc')
             ->filters([
-                // Add any filters you want here
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

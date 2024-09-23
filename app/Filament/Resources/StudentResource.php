@@ -71,6 +71,12 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Telefon raqami')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('price')
+                    ->label('Qarzdorlik')
+                    ->badge()
+                    ->getStateUsing(fn($record) => format_money($record->studentDebts()))
+                    ->color(fn($record) => $record->studentDebts() < 0 ? 'danger' : 'success')  // Treat negative debts as danger
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('comment')
                     ->html()
                     ->label('Izoh')
@@ -117,11 +123,12 @@ class StudentResource extends Resource
                             })->required(),
                         RichEditor::make('comment')
                             ->label('Izoh')
+                            ->required()
                             ->helperText('Bu yerga to`lov haqida qo`shimcha malumot yozishingiz mumkin!'),
                     ])
                     ->action(function (array $data, $record) {
-                        // dd($data);
                         $record->payments()->create($data);
+                        $record->debts()->create($data);
                     })
             ])
             ->bulkActions([

@@ -31,4 +31,14 @@ class Student extends Model
     {
         return $this->hasMany(StudentAttendance::class);
     }
+
+    public function debts(): HasMany
+    {
+        return $this->hasMany(StudentPayment::class);
+    }
+
+    public function studentDebts(): float
+    {
+        return $this->debts()->sum('price');
+    }
 }
