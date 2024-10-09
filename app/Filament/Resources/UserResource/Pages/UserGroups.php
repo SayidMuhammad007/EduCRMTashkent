@@ -138,6 +138,7 @@ class UserGroups extends Page implements Tables\Contracts\HasTable
                 ->mask(RawJs::make('$money($input)'))
                 ->stripCharacters(',')
                 ->suffix(fn(Get $get) => $get('teacher_price_type') == TeacherPriceType::BY_PERCENTAGE->value ? '%' : 'so`m'),
+
         ];
     }
 }

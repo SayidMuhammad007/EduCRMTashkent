@@ -4,8 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Enum\UserRole;
 use App\Filament\Resources\UserResource\Pages;
+use App\Models\Payment;
 use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Split;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
@@ -55,6 +60,8 @@ class UserResource extends Resource
                     ->live(debounce: 500),
                 Forms\Components\Select::make('subject_id')
                     ->label('Yo`nalish')
+                    ->searchable()
+                    ->preload()
                     ->relationship('subject', 'name')
                     ->required(fn(Get $get) => $get('role_id') == UserRole::TEACHER->value)
                     ->visible(fn(Get $get) => $get('role_id') == UserRole::TEACHER->value),
@@ -92,6 +99,54 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('pay')
+                    ->label('To`lov qilish')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->color('success')
+                    ->hidden(fn($record) => $record->role_id != UserRole::TEACHER)
+                    // ->form([
+                    //     Split::make([
+                    //         DatePicker::make('from')
+                    //             ->label('dan')
+                    //             ->required(),
+                    //         DatePicker::make('to')
+                    //             ->label('gacha')
+                    //             ->required(),
+                    //     ])->live(debounce: 500),
+                    //     Placeholder::make('results')
+                    //         ->label('Tanlangan davr mobaynida hisoblangan summa')
+                    //         ->content(function (Forms\Get $get, $record) {
+                    //             $from = $get('from');
+                    //             $to = $get('to');
+                    //             if ($from && $to) {
+                    //                 $sum = 0;
+                    //                 foreach ($record->groups as $group) {
+                    //                     $sum += Payment::where('student_id', $group->student_id)
+                    //                         ->whereDate('created_at', '>=', $from)
+                    //                         ->whereDate('created_at', '<=', $to)
+                    //                         ->where('status', 1)
+                    //                         ->sum('price');
+                    //                 }
+                    //                 return format_money($sum);
+                    //             }
+                    //         })->live(debounce: 500),
+                    //     Split::make([
+                    //         TextInput::make('price')
+                    //             ->label('To`lanyatgan summa')
+                    //             ->required(),
+                    //     ]),
+                    // ])
+                    ->url(fn($record) => UserResource::getUrl('payments', ['record' => $record]))
+                // ->action(function () {
+                //     // $from = $data['from'];
+                //     // $to = $data['to'];
+                //     // foreach ($record->groups as $group) {
+                //     //     Payment::where('student_id', $group->student_id)
+                //     //         ->whereDate('created_at', '>=', $from)
+                //     //         ->whereDate('created_at', '<=', $to)
+                //     //         ->where('status', 1)->update(['status' => 0]);
+                //     // }
+                // })
             ])
             ->recordUrl(fn(Model $record) => $record->role_id == UserRole::TEACHER ? UserResource::getUrl('students', ['record' => $record]) : '')
             ->bulkActions([
@@ -116,6 +171,7 @@ class UserResource extends Resource
             // 'edit' => Pages\EditUser::route('/{record}/edit'),
             'students' => Pages\UserGroups::route('/{record}/students'),
             'history' => Pages\StudentData::route('/student/{record}/history'),
+            'payments' => Pages\TeacherPay::route('/user/{record}/payments'),
         ];
     }
 }

@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained();
-            $table->foreignId('group_id')->constrained('student_groups');
+            $table->foreignId('teacher_id')->constrained('users');
             $table->string('price');
             $table->string('payment_type');
+            $table->string('status')->default(1);
             $table->text('comment');
             $table->timestamps();
         });

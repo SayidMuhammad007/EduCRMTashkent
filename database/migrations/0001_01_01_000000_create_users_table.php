@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('role_id')->nullable();
             $table->foreignId('subject_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->string('balans')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

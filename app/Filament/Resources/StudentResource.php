@@ -6,6 +6,7 @@ use App\Enum\PaymentMethod;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use App\Models\Student;
+use App\Models\StudentGroup;
 use App\Models\StudentPayment;
 use Filament\Forms;
 use Filament\Forms\Components\RichEditor;
@@ -115,13 +116,13 @@ class StudentResource extends Resource
                             ->label('To`lov usuli')
                             ->options(PaymentMethod::class)
                             ->required(),
-                        Select::make('group_id')
-                            ->label('Guruh')
+                        Select::make('teacher_id')
+                            ->label('O`qituvchi')
                             ->native(false)
                             ->searchable()
                             ->preload()
                             ->options(function ($record) {
-                                return $record->groups->pluck('subject.name', 'id');
+                                return $record->groups->pluck('teacher.name', 'id');
                             })->required(),
                         RichEditor::make('comment')
                             ->label('Izoh')

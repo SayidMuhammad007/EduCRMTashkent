@@ -13,10 +13,11 @@ class Payment extends Model
 
     protected $fillable = [
         'student_id',
-        'group_id',
+        'teacher_id',
         'price',
         'payment_type',
         'comment',
+        'status'
     ];
 
     protected $casts = [
@@ -28,8 +29,8 @@ class Payment extends Model
         return $this->belongsTo(Student::class);
     }
 
-    public function group(): BelongsTo
+    public function studentGroup(): BelongsTo
     {
-        return $this->belongsTo(StudentGroup::class);
+        return $this->belongsTo(StudentGroup::class, 'teacher_id');
     }
 }
