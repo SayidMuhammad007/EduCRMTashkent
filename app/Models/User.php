@@ -62,4 +62,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(StudentGroup::class, 'teacher_id');
     }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(TeacherPayment::class, 'teacher_id');
+    }
 }

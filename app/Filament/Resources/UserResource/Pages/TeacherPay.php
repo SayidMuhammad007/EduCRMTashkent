@@ -5,19 +5,16 @@ namespace App\Filament\Resources\UserResource\Pages;
 use App\Enum\TeacherPriceType;
 use App\Filament\Resources\UserResource;
 use App\Models\Payment;
-use App\Models\StudentGroup;
 use App\Models\User;
-use Carbon\Carbon;
-use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Notifications\Notification;
+use Filament\Support\RawJs;
 
 class TeacherPay extends Page implements Tables\Contracts\HasTable
 {
@@ -103,32 +100,11 @@ class TeacherPay extends Page implements Tables\Contracts\HasTable
                     ->searchable(),
             ])
             ->defaultSort('created_at', 'desc')
-            ->filters([
-                // Filter::make('created_at')
-                //     ->form([
-                //         DatePicker::make('from')
-                //             ->label('Boshlanish sanasi')
-                //             ->format('d.m.Y')
-                //             ->maxDate(now()),
-                //         DatePicker::make('to')
-                //             ->label('Tugash sanasi')
-                //             ->format('d.m.Y')
-                //             ->maxDate(now()),
-                //     ])
-                //     ->query(function (Builder $query, array $data): Builder {
-                //         return $query->when(
-                //             $data['from'] && $data['to'],
-                //             fn(Builder $query) => $query->whereBetween('created_at', [
-                //                 Carbon::parse($data['from'])->startOfDay(),
-                //                 Carbon::parse($data['to'])->endOfDay(),
-                //             ])
-                //         );
-                //     })
-            ])
             ->headerActions([
                 Action::make('create_payment_debt')
                     ->label('Balansga qo`shish')
                     ->requiresConfirmation()
+                    ->visible(fn() => $this->data > 0)
                     ->action(function () {
                         $this->record->balans += $this->data;
                         $this->record->save();
@@ -137,6 +113,33 @@ class TeacherPay extends Page implements Tables\Contracts\HasTable
                             $query->where('teacher_id', $this->record->id);
                         })->where('status', 1)->update(['status' => 0]);
 
+                        $this->calculateTotal();
+
+                        Notification::make()
+                            ->title('Balans yangilandi')
+                            ->success()
+                            ->send();
+
+                        $this->dispatch('refreshPage');
+                    }),
+                Action::make('pay')
+                    ->label('Maosh berish')
+                    ->visible(fn() => $this->record->balans > 0)
+                    ->form([
+                        TextInput::make('balans')
+                            ->disabled()
+                            ->default(fn() => $this->record->balans),
+                        TextInput::make('price')
+                            ->label('To`lov summasi')
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(','),
+                        Textarea::make('comment')
+                            ->label('Izoh')
+                    ])
+                    ->action(function (array $data) {
+                        $this->record->payments($data);
+                        $this->record->balans -= $data['price'];
+                        $this->record->save();
                         $this->calculateTotal();
 
                         Notification::make()
