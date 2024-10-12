@@ -15,6 +15,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -98,57 +99,29 @@ class UserResource extends Resource
                     ->options(UserRole::class)
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('pay')
-                    ->label('To`lov qilish')
-                    ->icon('heroicon-o-currency-dollar')
-                    ->color('success')
-                    ->hidden(fn($record) => $record->role_id != UserRole::TEACHER)
-                    // ->form([
-                    //     Split::make([
-                    //         DatePicker::make('from')
-                    //             ->label('dan')
-                    //             ->required(),
-                    //         DatePicker::make('to')
-                    //             ->label('gacha')
-                    //             ->required(),
-                    //     ])->live(debounce: 500),
-                    //     Placeholder::make('results')
-                    //         ->label('Tanlangan davr mobaynida hisoblangan summa')
-                    //         ->content(function (Forms\Get $get, $record) {
-                    //             $from = $get('from');
-                    //             $to = $get('to');
-                    //             if ($from && $to) {
-                    //                 $sum = 0;
-                    //                 foreach ($record->groups as $group) {
-                    //                     $sum += Payment::where('student_id', $group->student_id)
-                    //                         ->whereDate('created_at', '>=', $from)
-                    //                         ->whereDate('created_at', '<=', $to)
-                    //                         ->where('status', 1)
-                    //                         ->sum('price');
-                    //                 }
-                    //                 return format_money($sum);
-                    //             }
-                    //         })->live(debounce: 500),
-                    //     Split::make([
-                    //         TextInput::make('price')
-                    //             ->label('To`lanyatgan summa')
-                    //             ->required(),
-                    //     ]),
-                    // ])
-                    ->url(fn($record) => UserResource::getUrl('payments', ['record' => $record]))
-                // ->action(function () {
-                //     // $from = $data['from'];
-                //     // $to = $data['to'];
-                //     // foreach ($record->groups as $group) {
-                //     //     Payment::where('student_id', $group->student_id)
-                //     //         ->whereDate('created_at', '>=', $from)
-                //     //         ->whereDate('created_at', '<=', $to)
-                //     //         ->where('status', 1)->update(['status' => 0]);
-                //     // }
-                // })
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\Action::make('pay')
+                        ->label('To`lov qilish')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->color('success')
+                        ->hidden(fn($record) => $record->role_id != UserRole::TEACHER)
+                        ->url(fn($record) => UserResource::getUrl('payments', ['record' => $record])),
+                    Tables\Actions\Action::make('attendance')
+                        ->label('Davomat')
+                        ->icon('heroicon-o-pencil-square')
+                        ->color('warning')
+                        ->hidden(fn($record) => $record->role_id != UserRole::TEACHER)
+                        ->url(fn($record) => UserResource::getUrl('students', ['record' => $record])),
+                    Tables\Actions\Action::make('history')
+                        ->label('To`lovlar tarixi')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->color('info')
+                        ->hidden(fn($record) => $record->role_id != UserRole::TEACHER)
+                        ->url(fn($record) => UserResource::getUrl('payments.history', ['record' => $record]))
+                ]),
             ])
-            ->recordUrl(fn(Model $record) => $record->role_id == UserRole::TEACHER ? UserResource::getUrl('students', ['record' => $record]) : '')
+            // ->recordUrl(fn(Model $record) => $record->role_id == UserRole::TEACHER ? UserResource::getUrl('students', ['record' => $record]) : '')
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -172,6 +145,7 @@ class UserResource extends Resource
             'students' => Pages\UserGroups::route('/{record}/students'),
             'history' => Pages\StudentData::route('/student/{record}/history'),
             'payments' => Pages\TeacherPay::route('/user/{record}/payments'),
+            'payments.history' => Pages\TeacherPayments::route('/user/{record}/payments/history'),
         ];
     }
 }

@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
+use App\Enum\PaymentMethod;
 use App\Enum\TeacherPriceType;
 use App\Filament\Resources\UserResource;
 use App\Models\Payment;
 use App\Models\User;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\Page;
@@ -133,11 +136,16 @@ class TeacherPay extends Page implements Tables\Contracts\HasTable
                             ->label('To`lov summasi')
                             ->mask(RawJs::make('$money($input)'))
                             ->stripCharacters(','),
+                        Select::make('payment_type')
+                            ->options(PaymentMethod::class),
+                        DatePicker::make('date')
+                            ->default(now())
+                            ->label('Izoh'),
                         Textarea::make('comment')
                             ->label('Izoh')
                     ])
                     ->action(function (array $data) {
-                        $this->record->payments($data);
+                        $this->record->payments()->create($data);
                         $this->record->balans -= $data['price'];
                         $this->record->save();
                         $this->calculateTotal();

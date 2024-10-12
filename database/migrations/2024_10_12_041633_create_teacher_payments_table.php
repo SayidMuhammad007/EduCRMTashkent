@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('teacher_id')->constrained('users');
             $table->string('price');
+            $table->string('payment_type');
             $table->text('comment')->nullable();
             $table->date('date');
             $table->timestamps();
