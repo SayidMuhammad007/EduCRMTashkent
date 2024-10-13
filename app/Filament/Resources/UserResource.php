@@ -26,6 +26,8 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 4;
+
     public static function getModelLabel(): string
     {
         return 'Xodim';

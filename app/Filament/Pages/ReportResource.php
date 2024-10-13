@@ -23,6 +23,11 @@ class ReportResource extends Page implements Tables\Contracts\HasTable
 
     protected static ?string $navigationLabel = 'Xisobot';
 
+    public static function getNavigationGroup(): ?string
+    {
+        return ('Xisobot');
+    }
+
     public $from;
     public $until;
 

@@ -16,6 +16,8 @@ class SubjectResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 3;
+
     public static function getModelLabel(): string
     {
         return 'Yo`nalish';
