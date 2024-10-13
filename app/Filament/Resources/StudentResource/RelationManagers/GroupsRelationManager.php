@@ -2,21 +2,21 @@
 
 namespace App\Filament\Resources\StudentResource\RelationManagers;
 
-use App\Enum\Days;
-use App\Enum\TeacherPriceType;
 use App\Filament\Resources\UserResource\Pages\UserGroups;
-use App\Models\User;
-use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
 
 class GroupsRelationManager extends RelationManager
 {
     protected static string $relationship = 'groups';
+    protected static ?string $title = 'Guruhlar';
+
+    public static function getModelLabel(): string
+    {
+        return ('guruh'); // Singular form
+    }
 
     public function form(Form $form): Form
     {
@@ -41,7 +41,8 @@ class GroupsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('price')
                     ->label('Summa')
                     ->formatStateUsing(fn($state) => format_money($state)),
-                Tables\Columns\TextColumn::make('teacher_price_type'),
+                Tables\Columns\TextColumn::make('teacher_price_type')
+                    ->label('O`qituvchi haqqi turi'),
                 Tables\Columns\TextColumn::make('teacher_price')
                     ->label('O`qituvchi haqqi')
                     ->formatStateUsing(fn($state) => format_money($state)),

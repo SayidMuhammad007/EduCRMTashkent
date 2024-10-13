@@ -19,6 +19,13 @@ class PaymentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'payments';
 
+    protected static ?string $title = 'To`lovlar';
+
+    public static function getModelLabel(): string
+    {
+        return ('to`lov'); // Singular form
+    }
+
     public function form(Form $form): Form
     {
         return $form
@@ -52,9 +59,9 @@ class PaymentsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('group.teacher.name')
+                Tables\Columns\TextColumn::make('studentGroup.teacher.name')
                     ->label('O`qituvchi'),
-                Tables\Columns\TextColumn::make('group.subject.name')
+                Tables\Columns\TextColumn::make('studentGroup.subject.name')
                     ->label('Yo`nalish'),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Summa'),

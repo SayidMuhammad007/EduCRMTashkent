@@ -101,6 +101,7 @@ class UserGroups extends Page implements Tables\Contracts\HasTable
         return [
             Forms\Components\Select::make('subject_id')
                 ->required()
+                ->label('Yo`nalish')
                 ->relationship('subject', 'name')
                 ->native(false)
                 ->searchable()
@@ -108,6 +109,7 @@ class UserGroups extends Page implements Tables\Contracts\HasTable
                 ->preload(),
             Forms\Components\Select::make('teacher_id')
                 ->required()
+                ->label('O`qituvchi')
                 ->options(function (Get $get) {
                     $subject = $get('subject_id');
                     if ($subject)
@@ -118,16 +120,20 @@ class UserGroups extends Page implements Tables\Contracts\HasTable
                 ->preload(),
             Forms\Components\Select::make('days')
                 ->required()
+                ->label('Dars kunlari')
                 ->options(Days::class)
                 ->multiple()
                 ->native(false)
                 ->searchable()
                 ->preload(),
             Forms\Components\TextInput::make('price')
+                ->label('Summa')
+                ->required()
                 ->mask(RawJs::make('$money($input)'))
                 ->stripCharacters(','),
             Forms\Components\Select::make('teacher_price_type')
                 ->required()
+                ->label('O`qituvchiga')
                 ->options(TeacherPriceType::class)
                 ->live()
                 ->native(false)
@@ -135,6 +141,7 @@ class UserGroups extends Page implements Tables\Contracts\HasTable
                 ->preload(),
             Forms\Components\TextInput::make('teacher_price')
                 ->required()
+                ->label('O`qituvchiga')
                 ->mask(RawJs::make('$money($input)'))
                 ->stripCharacters(',')
                 ->suffix(fn(Get $get) => $get('teacher_price_type') == TeacherPriceType::BY_PERCENTAGE->value ? '%' : 'so`m'),
