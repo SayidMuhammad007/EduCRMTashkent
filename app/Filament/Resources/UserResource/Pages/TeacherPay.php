@@ -49,7 +49,7 @@ class TeacherPay extends Page implements Tables\Contracts\HasTable
             if ($teacherPriceType == TeacherPriceType::BY_PRICE) {
                 $this->data += $item->studentGroup->teacher_price;
             } else {
-                $teacherPrice = $item->studentGroup->price * ($teacherPrice / 100);
+                $teacherPrice = $item->price * ($teacherPrice / 100);
                 $this->data += $teacherPrice;
             }
         }
@@ -83,7 +83,7 @@ class TeacherPay extends Page implements Tables\Contracts\HasTable
                         if ($teacherPriceType == TeacherPriceType::BY_PRICE) {
                             return format_money($record->studentGroup->teacher_price);
                         } else {
-                            $teacherPrice = $record->studentGroup->price * ($teacherPrice / 100);
+                            $teacherPrice = $record->price * ($teacherPrice / 100);
                             return format_money($teacherPrice);
                         }
                     })

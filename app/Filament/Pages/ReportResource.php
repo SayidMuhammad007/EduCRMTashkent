@@ -77,20 +77,17 @@ class ReportResource extends Page implements Tables\Contracts\HasTable
                 Tables\Filters\Filter::make('date_range')
                     ->form([
                         DatePicker::make('from')
-                            ->label('dan')
-                            ->live()
-                            ->afterStateUpdated(function ($state) {
-                                $this->from = $state;
-                                $this->dispatch('refresh');
-                            }),
+                            ->label('dan'),
                         DatePicker::make('until')
-                            ->label('gacha')
-                            ->live()
-                            ->afterStateUpdated(function ($state) {
-                                $this->until = $state;
-                                $this->dispatch('refresh');
-                            }),
+                            ->label('gacha'),
                     ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if ($data['until'] && $data['from']) {
+                            return $query->whereBetween('date', [$data['from'], $data['until']]);
+                        } else {
+                            return $query;
+                        }
+                    })
                     ->columns(2)
                     ->indicateUsing(function (array $data): ?string {
                         if ($data['from'] && $data['until']) {
