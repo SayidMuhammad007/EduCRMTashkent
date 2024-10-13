@@ -13,10 +13,8 @@ class Report extends Model
 
     public function scopeGetReportData($query, $fromDate = null, $untilDate = null)
     {
-        $currentDate = Carbon::create(2024, 10, 12);
-
-        $fromDate = $fromDate ? Carbon::parse($fromDate)->startOfDay() : $currentDate->copy()->subDays(30)->startOfDay();
-        $untilDate = $untilDate ? Carbon::parse($untilDate)->endOfDay() : $currentDate->copy()->endOfDay();
+        $fromDate = $fromDate ? Carbon::parse($fromDate)->startOfDay() : Carbon::parse('2024-10-01')->startOfDay();
+        $untilDate = $untilDate ? Carbon::parse($untilDate)->endOfDay() : Carbon::parse(today())->endOfDay();
         $subQuery = DB::table('payments')
             ->select(
                 DB::raw('DATE(created_at) as date'),
