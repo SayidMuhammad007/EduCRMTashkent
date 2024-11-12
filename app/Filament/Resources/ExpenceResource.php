@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enum\UserRole;
 use App\Filament\Resources\ExpenceResource\Pages;
 use App\Models\Expence;
 use Filament\Forms;
@@ -27,6 +28,11 @@ class ExpenceResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'Xarajatlar';
+    }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role_id != UserRole::TEACHER;
     }
 
     public static function form(Form $form): Form

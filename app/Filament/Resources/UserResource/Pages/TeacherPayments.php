@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
+use App\Enum\UserRole;
 use App\Filament\Resources\UserResource;
 use App\Models\User;
 use Filament\Resources\Pages\Page;
@@ -19,6 +20,8 @@ class TeacherPayments extends Page implements Tables\Contracts\HasTable
     protected static string $view = 'filament.resources.user-resource.pages.teacher-payments';
 
     public ?User $record = null;
+
+   
 
     public function mount(User $record): void
     {

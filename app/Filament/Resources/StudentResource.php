@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enum\PaymentMethod;
+use App\Enum\UserRole;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use App\Models\Student;
@@ -34,6 +35,11 @@ class StudentResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'Talabalar';
+    }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role_id != UserRole::TEACHER;
     }
 
     public static function form(Form $form): Form

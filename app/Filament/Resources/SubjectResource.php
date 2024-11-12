@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enum\UserRole;
 use App\Filament\Resources\SubjectResource\Pages;
 use App\Models\Subject;
 use Filament\Forms;
@@ -18,6 +19,11 @@ class SubjectResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role_id != UserRole::TEACHER;
+    }
+    
     public static function getModelLabel(): string
     {
         return 'Yo`nalish';

@@ -74,6 +74,13 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                if (auth()->user()->role_id == UserRole::TEACHER) {
+                    return User::where('id', auth()->id());
+                } else {
+                    return User::query();
+                }
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Ism')
@@ -102,24 +109,24 @@ class UserResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->hidden(fn() => auth()->user()->role_id == UserRole::TEACHER),
                     Tables\Actions\Action::make('pay')
                         ->label('To`lov qilish')
+                        ->hidden(fn($record) => auth()->user()->role_id == UserRole::TEACHER)
                         ->icon('heroicon-o-currency-dollar')
                         ->color('success')
-                        ->hidden(fn($record) => $record->role_id != UserRole::TEACHER)
                         ->url(fn($record) => UserResource::getUrl('payments', ['record' => $record])),
                     Tables\Actions\Action::make('attendance')
                         ->label('Davomat')
                         ->icon('heroicon-o-pencil-square')
                         ->color('warning')
-                        ->hidden(fn($record) => $record->role_id != UserRole::TEACHER)
                         ->url(fn($record) => UserResource::getUrl('students', ['record' => $record])),
                     Tables\Actions\Action::make('history')
                         ->label('To`lovlar tarixi')
+                        ->hidden(fn() => auth()->user()->role_id == UserRole::TEACHER)
                         ->icon('heroicon-o-currency-dollar')
                         ->color('info')
-                        ->hidden(fn($record) => $record->role_id != UserRole::TEACHER)
                         ->url(fn($record) => UserResource::getUrl('payments.history', ['record' => $record]))
                 ]),
             ])

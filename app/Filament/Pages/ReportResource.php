@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enum\UserRole;
 use App\Models\Report;
 use Filament\Pages\Page;
 use Filament\Tables;
@@ -23,6 +24,11 @@ class ReportResource extends Page implements Tables\Contracts\HasTable
 
     protected static ?string $navigationLabel = 'Xisobot';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role_id != UserRole::TEACHER;
+    }
+    
     public static function getNavigationGroup(): ?string
     {
         return ('Xisobot');
