@@ -57,7 +57,16 @@ class UserResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('role_id')
                     ->label('Rol')
-                    ->options(UserRole::class)
+                    ->options(function () {
+                        if (auth()->user()->role_id === UserRole::DIRECTOR) {
+                            return collect(UserRole::cases())->mapWithKeys(fn($role) => [
+                                $role->value => $role->getLabel()
+                            ])->toArray();
+                        }
+                        return [
+                            UserRole::TEACHER->value => UserRole::TEACHER->getLabel()
+                        ];
+                    })
                     ->native(false)
                     ->required()
                     ->live(debounce: 500),
@@ -128,7 +137,7 @@ class UserResource extends Resource
                         ->icon('heroicon-o-currency-dollar')
                         ->color('info')
                         ->url(fn($record) => UserResource::getUrl('payments.history', ['record' => $record]))
-                ]),
+                ])->visible(fn() => auth()->user()->role_id != UserRole::ADMIN),
             ])
             // ->recordUrl(fn(Model $record) => $record->role_id == UserRole::TEACHER ? UserResource::getUrl('students', ['record' => $record]) : '')
             ->bulkActions([
