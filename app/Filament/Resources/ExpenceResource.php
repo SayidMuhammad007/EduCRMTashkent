@@ -84,12 +84,13 @@ class ExpenceResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn() => auth()->user()->role_id == UserRole::DIRECTOR),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                ])->visible(fn() => auth()->user()->role_id == UserRole::DIRECTOR),
             ]);
     }
 

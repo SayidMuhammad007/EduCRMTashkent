@@ -107,7 +107,8 @@ class StudentResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn() => auth()->user()->role_id == UserRole::DIRECTOR),
                 Tables\Actions\Action::make('pay')
                     ->label('To`lov qilish')
                     ->icon('heroicon-o-currency-dollar')
@@ -145,7 +146,8 @@ class StudentResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                ])
+                    ->visible(fn() => auth()->user()->role_id == UserRole::DIRECTOR),
             ]);
     }
 

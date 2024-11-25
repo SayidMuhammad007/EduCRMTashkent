@@ -16,7 +16,7 @@ class TeacherChart extends Page
 
     public static function canAccess(): bool
     {
-        return auth()->user()->role_id != UserRole::TEACHER;
+        return auth()->user()->role_id == UserRole::DIRECTOR;
     }
 
     public static function getNavigationGroup(): ?string
